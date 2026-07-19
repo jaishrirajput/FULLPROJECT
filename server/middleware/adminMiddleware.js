@@ -4,7 +4,7 @@ const adminMiddleware = (req, res, next) => {
   try {
     // ✅ Admin email (YOUR EMAIL)
     const adminEmails = [
-      "ritikghodke70@gmail.com"
+      "msdhoni5616000016@gmail.com"
     ];
 
     if (!req.user || !req.user.email) {
