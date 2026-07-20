@@ -241,7 +241,7 @@
 
 import { Resend } from "resend";
 
-const resend = new Resend("re_PHnyxxLu_L4BP3bnxGWcKxDPiy2rwtvjD");
+const resend = new Resend("re_a3zy8t2o_FXG1x88mZn1ngHhf2Tsr4fge");
 
 // ✅ Generate 6-digit OTP
 export const generateOTP = () => {
