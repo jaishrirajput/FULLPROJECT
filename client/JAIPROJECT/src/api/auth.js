@@ -47,7 +47,7 @@
 import axios from "axios";
 
 // Backend ka base URL
-const API_URL = "https://fullproject-9.onrender.com/api/auth";
+const API_URL = "https://fullproject-fnbv.onrender.com";
 
 // Axios instance
 const API = axios.create({

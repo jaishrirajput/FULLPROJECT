@@ -337,7 +337,7 @@ export default function AdminPanel() {
   const checkAdminAccess = async () => {
     try {
       const userEmail = localStorage.getItem("email");
-      const adminEmails = ["ritikghodke70@gmail.com"];
+      const adminEmails = ["msdhoni5616000016@gmail.com"];
       
       if (!adminEmails.includes(userEmail)) {
         alert("Access Denied! Admin only.");

@@ -259,7 +259,7 @@ export default function Navbar() {
   const userName = localStorage.getItem("name") || "User";
 
   // ✅ Admin emails list
-  const adminEmails = ["ritikghodke70@gmail.com"];
+  const adminEmails = ["msdhoni5616000016@gmail.com"];
   const isAdmin = adminEmails.includes(userEmail);
 
   const handleLogout = () => {
