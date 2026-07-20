@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://fullproject-fnbv.onrender.com",
+  baseURL: "https://fullproject-fnbv.onrender.com/api",
 });
 
 // ✅ Automatically add token in every request
