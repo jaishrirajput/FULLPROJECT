@@ -329,7 +329,7 @@ export const sendOTPEmail = async (email, otp) => {
     console.log(`🔹 Using Resend API`);
 
     const { data, error } = await resend.emails.send({
-      from: "AI Robots <onboarding@resend.dev>",
+     from: "AI Robots <noreply@airobotsmarketplace.in>",
       to: email,
       subject: "🔐 Your OTP for Account Verification",
       html: `
