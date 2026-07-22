@@ -1415,7 +1415,7 @@ export default function AuthPage() {
             Need help? Join our Telegram community
           </p>
           <a
-            href="https://t.me/airobotsmarket"
+           href="https://t.me/+YkEN6s3Hm_oxY2Nl"
             target="_blank"
             rel="noopener noreferrer"
             style={{

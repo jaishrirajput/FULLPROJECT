@@ -318,16 +318,603 @@
 
 //withdrall
 
+// import React, { useState, useEffect } from "react";
+// import { useNavigate } from "react-router-dom";
+// import API from "../api";
+
+// export default function AdminPanel() {
+//   const [payments, setPayments] = useState([]);
+//   const [withdrawals, setWithdrawals] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [tab, setTab] = useState("payments"); // payments or withdrawals
+//   const [filter, setFilter] = useState("all");
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     checkAdminAccess();
+//   }, []);
+
+//   const checkAdminAccess = async () => {
+//     try {
+//       const userEmail = localStorage.getItem("email");
+//       const adminEmails = ["msdhoni5616000016@gmail.com"];
+      
+//       if (!adminEmails.includes(userEmail)) {
+//         alert("Access Denied! Admin only.");
+//         navigate("/");
+//         return;
+//       }
+
+//       fetchData();
+//     } catch (error) {
+//       console.error("Error:", error);
+//       navigate("/");
+//     }
+//   };
+
+//   const fetchData = async () => {
+//     try {
+//       const paymentsRes = await API.get("/payment/pending-payments");
+//       setPayments(paymentsRes.data.payments || []);
+
+//       const withdrawalsRes = await API.get("/payment/withdrawal-requests");
+//       setWithdrawals(withdrawalsRes.data.withdrawals || []);
+
+//       setLoading(false);
+//     } catch (error) {
+//       console.error("Fetch error:", error);
+//       alert("Failed to load data");
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleVerifyPayment = async (transactionId, status) => {
+//     try {
+//       await API.post("/payment/verify-payment-manual", {
+//         transactionId,
+//         status
+//       });
+
+//       alert(`Payment ${status}!`);
+//       fetchData();
+//     } catch (error) {
+//       alert("Error: " + (error.response?.data?.message || "Failed"));
+//     }
+//   };
+
+//   const handleProcessWithdrawal = async (userId, amount, status) => {
+//     try {
+//       await API.post("/payment/process-withdrawal", {
+//         userId,
+//         amount,
+//         status
+//       });
+
+//       alert(`Withdrawal ${status}!`);
+//       fetchData();
+//     } catch (error) {
+//       alert("Error: " + (error.response?.data?.message || "Failed"));
+//     }
+//   };
+
+//   const getStatusBadge = (status) => {
+//     const styles = {
+//       pending: { bg: "#fef3c7", color: "#92400e", text: "⏳ Pending" },
+//       verified: { bg: "#d1fae5", color: "#065f46", text: "✅ Verified" },
+//       rejected: { bg: "#fee2e2", color: "#991b1b", text: "❌ Rejected" },
+//       approved: { bg: "#d1fae5", color: "#065f46", text: "✅ Approved" }
+//     };
+//     const style = styles[status] || styles.pending;
+//     return (
+//       <span style={{
+//         background: style.bg,
+//         color: style.color,
+//         padding: "6px 12px",
+//         borderRadius: 20,
+//         fontSize: 13,
+//         fontWeight: 600
+//       }}>
+//         {style.text}
+//       </span>
+//     );
+//   };
+
+//   if (loading) {
+//     return (
+//       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+//         <div style={{ fontSize: 20, color: "#667eea" }}>Loading...</div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div style={{
+//       minHeight: "100vh",
+//       background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+//       padding: "40px 20px"
+//     }}>
+//       <div style={{ maxWidth: 1400, margin: "0 auto" }}>
+        
+//         {/* Header */}
+//         <div style={{
+//           background: "#fff",
+//           padding: 32,
+//           borderRadius: 16,
+//           marginBottom: 24,
+//           boxShadow: "0 10px 40px rgba(0,0,0,0.15)"
+//         }}>
+//           <h1 style={{ fontSize: 32, fontWeight: 800, color: "#1e293b", marginBottom: 8 }}>
+//             🔐 Admin Panel
+//           </h1>
+//           <p style={{ color: "#64748b", fontSize: 16 }}>
+//             Email: {localStorage.getItem("email")}
+//           </p>
+//         </div>
+
+//         {/* Tabs */}
+//         <div style={{
+//           background: "#fff",
+//           padding: 16,
+//           borderRadius: 12,
+//           marginBottom: 24,
+//           display: "flex",
+//           gap: 12,
+//           boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+//         }}>
+//           <button
+//             onClick={() => setTab("payments")}
+//             style={{
+//               padding: "12px 24px",
+//               background: tab === "payments" ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" : "#f1f5f9",
+//               color: tab === "payments" ? "#fff" : "#64748b",
+//               border: "none",
+//               borderRadius: 8,
+//               cursor: "pointer",
+//               fontWeight: 600,
+//               fontSize: 14
+//             }}
+//           >
+//             💳 Payments ({payments.filter(p => p.status === "pending").length})
+//           </button>
+//           <button
+//             onClick={() => setTab("withdrawals")}
+//             style={{
+//               padding: "12px 24px",
+//               background: tab === "withdrawals" ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" : "#f1f5f9",
+//               color: tab === "withdrawals" ? "#fff" : "#64748b",
+//               border: "none",
+//               borderRadius: 8,
+//               cursor: "pointer",
+//               fontWeight: 600,
+//               fontSize: 14
+//             }}
+//           >
+//             💰 Withdrawals ({withdrawals.filter(w => w.status === "pending").length})
+//           </button>
+//         </div>
+
+//         {/* Payments Table */}
+//         {tab === "payments" && (
+//           <div style={{
+//             background: "#fff",
+//             borderRadius: 16,
+//             padding: 24,
+//             boxShadow: "0 10px 40px rgba(0,0,0,0.15)"
+//           }}>
+//             <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 24, color: "#1e293b" }}>
+//               Payment Verifications
+//             </h2>
+
+//             {payments.length === 0 ? (
+//               <p style={{ textAlign: "center", color: "#94a3b8" }}>No payments yet</p>
+//             ) : (
+//               <div style={{ overflowX: "auto" }}>
+//                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
+//                   <thead>
+//                     <tr style={{ borderBottom: "2px solid #e2e8f0" }}>
+//                       <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>User</th>
+//                       <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Product</th>
+//                       <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Amount</th>
+//                       <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Transaction ID</th>
+//                       <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Status</th>
+//                       <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Actions</th>
+//                     </tr>
+//                   </thead>
+//                   <tbody>
+//                     {payments.map((payment, idx) => (
+//                       <tr key={idx} style={{ borderBottom: "1px solid #f1f5f9" }}>
+//                         <td style={{ padding: "16px" }}>
+//                           <div style={{ fontWeight: 600, color: "#1e293b" }}>{payment.userName}</div>
+//                           <div style={{ fontSize: 12, color: "#64748b" }}>{payment.userEmail}</div>
+//                         </td>
+//                         <td style={{ padding: "16px", fontWeight: 600 }}>{payment.productName}</td>
+//                         <td style={{ padding: "16px", fontWeight: 700, color: "#667eea", fontSize: 16 }}>
+//                           ₹{payment.amount}
+//                         </td>
+//                         <td style={{ padding: "16px", fontSize: 13, color: "#64748b", fontFamily: "monospace" }}>
+//                           {payment.transactionId}
+//                         </td>
+//                         <td style={{ padding: "16px" }}>
+//                           {getStatusBadge(payment.status)}
+//                         </td>
+//                         <td style={{ padding: "16px" }}>
+//                           {payment.status === "pending" && (
+//                             <div style={{ display: "flex", gap: 8 }}>
+//                               <button
+//                                 onClick={() => handleVerifyPayment(payment.transactionId, "verified")}
+//                                 style={{
+//                                   padding: "8px 14px",
+//                                   background: "#059669",
+//                                   color: "#fff",
+//                                   border: "none",
+//                                   borderRadius: 6,
+//                                   cursor: "pointer",
+//                                   fontSize: 12,
+//                                   fontWeight: 600
+//                                 }}
+//                               >
+//                                 Accept
+//                               </button>
+//                               <button
+//                                 onClick={() => handleVerifyPayment(payment.transactionId, "rejected")}
+//                                 style={{
+//                                   padding: "8px 14px",
+//                                   background: "#dc2626",
+//                                   color: "#fff",
+//                                   border: "none",
+//                                   borderRadius: 6,
+//                                   cursor: "pointer",
+//                                   fontSize: 12,
+//                                   fontWeight: 600
+//                                 }}
+//                               >
+//                                 Reject
+//                               </button>
+//                             </div>
+//                           )}
+//                         </td>
+//                       </tr>
+//                     ))}
+//                   </tbody>
+//                 </table>
+//               </div>
+//             )}
+//           </div>
+//         )}
+
+//         {/* Withdrawals Table */}
+//         {tab === "withdrawals" && (
+//           <div style={{
+//             background: "#fff",
+//             borderRadius: 16,
+//             padding: 24,
+//             boxShadow: "0 10px 40px rgba(0,0,0,0.15)"
+//           }}>
+//             <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 24, color: "#1e293b" }}>
+//               Withdrawal Requests
+//             </h2>
+
+//             {withdrawals.length === 0 ? (
+//               <p style={{ textAlign: "center", color: "#94a3b8" }}>No withdrawal requests</p>
+//             ) : (
+//               <div style={{ overflowX: "auto" }}>
+//                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
+//                   <thead>
+//                     <tr style={{ borderBottom: "2px solid #e2e8f0" }}>
+//                       <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>User</th>
+//                       <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Amount</th>
+//                       <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Account</th>
+//                       <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>IFSC</th>
+//                       <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Status</th>
+//                       <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Actions</th>
+//                     </tr>
+//                   </thead>
+//                   <tbody>
+//                     {withdrawals.map((withdrawal, idx) => (
+//                       <tr key={idx} style={{ borderBottom: "1px solid #f1f5f9" }}>
+//                         <td style={{ padding: "16px" }}>
+//                           <div style={{ fontWeight: 600, color: "#1e293b" }}>{withdrawal.userName}</div>
+//                           <div style={{ fontSize: 12, color: "#64748b" }}>{withdrawal.userEmail}</div>
+//                         </td>
+//                         <td style={{ padding: "16px", fontWeight: 700, color: "#667eea", fontSize: 16 }}>
+//                           ₹{withdrawal.amount}
+//                         </td>
+//                         <td style={{ padding: "16px", fontSize: 13, color: "#64748b", fontFamily: "monospace" }}>
+//                           {withdrawal.bankAccountNumber}
+//                         </td>
+//                         <td style={{ padding: "16px", fontSize: 13, color: "#64748b" }}>
+//                           {withdrawal.ifscCode}
+//                         </td>
+//                         <td style={{ padding: "16px" }}>
+//                           {getStatusBadge(withdrawal.status)}
+//                         </td>
+//                         <td style={{ padding: "16px" }}>
+//                           {withdrawal.status === "pending" && (
+//                             <div style={{ display: "flex", gap: 8 }}>
+//                               <button
+//                                 onClick={() => handleProcessWithdrawal(withdrawal.userId, withdrawal.amount, "approved")}
+//                                 style={{
+//                                   padding: "8px 14px",
+//                                   background: "#059669",
+//                                   color: "#fff",
+//                                   border: "none",
+//                                   borderRadius: 6,
+//                                   cursor: "pointer",
+//                                   fontSize: 12,
+//                                   fontWeight: 600
+//                                 }}
+//                               >
+//                                 Approve
+//                               </button>
+//                               <button
+//                                 onClick={() => handleProcessWithdrawal(withdrawal.userId, withdrawal.amount, "rejected")}
+//                                 style={{
+//                                   padding: "8px 14px",
+//                                   background: "#dc2626",
+//                                   color: "#fff",
+//                                   border: "none",
+//                                   borderRadius: 6,
+//                                   cursor: "pointer",
+//                                   fontSize: 12,
+//                                   fontWeight: 600
+//                                 }}
+//                               >
+//                                 Reject
+//                               </button>
+//                             </div>
+//                           )}
+//                         </td>
+//                       </tr>
+//                     ))}
+//                   </tbody>
+//                 </table>
+//               </div>
+//             )}
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useState, useEffect } from "react";
+// import { useNavigate } from "react-router-dom";
+// import API from "../api";
+
+// export default function AdminPanel() {
+//   const [withdrawals, setWithdrawals] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     checkAdminAccess();
+//   }, []);
+
+//   const checkAdminAccess = async () => {
+//     try {
+//       const userEmail = localStorage.getItem("email");
+//       const adminEmails = ["msdhoni5616000016@gmail.com"];
+      
+//       if (!adminEmails.includes(userEmail)) {
+//         alert("Access Denied! Admin only.");
+//         navigate("/");
+//         return;
+//       }
+
+//       fetchData();
+//     } catch (error) {
+//       console.error("Error:", error);
+//       navigate("/");
+//     }
+//   };
+
+//   const fetchData = async () => {
+//     try {
+//       const withdrawalsRes = await API.get("/payment/withdrawal-requests");
+//       setWithdrawals(withdrawalsRes.data.withdrawals || []);
+
+//       setLoading(false);
+//     } catch (error) {
+//       console.error("Fetch error:", error);
+//       alert("Failed to load data");
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleProcessWithdrawal = async (userId, amount, status) => {
+//     try {
+//       await API.post("/payment/process-withdrawal", {
+//         userId,
+//         amount,
+//         status
+//       });
+
+//       alert(`Withdrawal ${status}!`);
+//       fetchData();
+//     } catch (error) {
+//       alert("Error: " + (error.response?.data?.message || "Failed"));
+//     }
+//   };
+
+//   const getStatusBadge = (status) => {
+//     const styles = {
+//       pending: { bg: "#fef3c7", color: "#92400e", text: "⏳ Pending" },
+//       approved: { bg: "#d1fae5", color: "#065f46", text: "✅ Approved" },
+//       rejected: { bg: "#fee2e2", color: "#991b1b", text: "❌ Rejected" }
+//     };
+//     const style = styles[status] || styles.pending;
+//     return (
+//       <span style={{
+//         background: style.bg,
+//         color: style.color,
+//         padding: "6px 12px",
+//         borderRadius: 20,
+//         fontSize: 13,
+//         fontWeight: 600
+//       }}>
+//         {style.text}
+//       </span>
+//     );
+//   };
+
+//   if (loading) {
+//     return (
+//       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+//         <div style={{ fontSize: 20, color: "#667eea" }}>Loading...</div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div style={{
+//       minHeight: "100vh",
+//       background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+//       padding: "40px 20px"
+//     }}>
+//       <div style={{ maxWidth: 1400, margin: "0 auto" }}>
+        
+//         {/* Header */}
+//         <div style={{
+//           background: "#fff",
+//           padding: 32,
+//           borderRadius: 16,
+//           marginBottom: 24,
+//           boxShadow: "0 10px 40px rgba(0,0,0,0.15)"
+//         }}>
+//           <h1 style={{ fontSize: 32, fontWeight: 800, color: "#1e293b", marginBottom: 8 }}>
+//             🔐 Admin Panel
+//           </h1>
+//           <p style={{ color: "#64748b", fontSize: 16 }}>
+//             Email: {localStorage.getItem("email")}
+//           </p>
+//         </div>
+
+//         {/* Withdrawals Table */}
+//         <div style={{
+//           background: "#fff",
+//           borderRadius: 16,
+//           padding: 24,
+//           boxShadow: "0 10px 40px rgba(0,0,0,0.15)"
+//         }}>
+//           <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 24, color: "#1e293b" }}>
+//             💰 Withdrawal Requests ({withdrawals.filter(w => w.status === "pending").length} pending)
+//           </h2>
+
+//           {withdrawals.length === 0 ? (
+//             <p style={{ textAlign: "center", color: "#94a3b8" }}>No withdrawal requests</p>
+//           ) : (
+//             <div style={{ overflowX: "auto" }}>
+//               <table style={{ width: "100%", borderCollapse: "collapse" }}>
+//                 <thead>
+//                   <tr style={{ borderBottom: "2px solid #e2e8f0" }}>
+//                     <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>User</th>
+//                     <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Amount</th>
+//                     <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Account</th>
+//                     <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>IFSC</th>
+//                     <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Status</th>
+//                     <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Actions</th>
+//                   </tr>
+//                 </thead>
+//                 <tbody>
+//                   {withdrawals.map((withdrawal, idx) => (
+//                     <tr key={idx} style={{ borderBottom: "1px solid #f1f5f9" }}>
+//                       <td style={{ padding: "16px" }}>
+//                         <div style={{ fontWeight: 600, color: "#1e293b" }}>{withdrawal.userName}</div>
+//                         <div style={{ fontSize: 12, color: "#64748b" }}>{withdrawal.userEmail}</div>
+//                       </td>
+//                       <td style={{ padding: "16px", fontWeight: 700, color: "#667eea", fontSize: 16 }}>
+//                         ₹{withdrawal.amount}
+//                       </td>
+//                       <td style={{ padding: "16px", fontSize: 13, color: "#64748b", fontFamily: "monospace" }}>
+//                         {withdrawal.bankAccountNumber}
+//                       </td>
+//                       <td style={{ padding: "16px", fontSize: 13, color: "#64748b" }}>
+//                         {withdrawal.ifscCode}
+//                       </td>
+//                       <td style={{ padding: "16px" }}>
+//                         {getStatusBadge(withdrawal.status)}
+//                       </td>
+//                       <td style={{ padding: "16px" }}>
+//                         {withdrawal.status === "pending" && (
+//                           <div style={{ display: "flex", gap: 8 }}>
+//                             <button
+//                               onClick={() => handleProcessWithdrawal(withdrawal.userId, withdrawal.amount, "approved")}
+//                               style={{
+//                                 padding: "8px 14px",
+//                                 background: "#059669",
+//                                 color: "#fff",
+//                                 border: "none",
+//                                 borderRadius: 6,
+//                                 cursor: "pointer",
+//                                 fontSize: 12,
+//                                 fontWeight: 600
+//                               }}
+//                             >
+//                               Approve
+//                             </button>
+//                             <button
+//                               onClick={() => handleProcessWithdrawal(withdrawal.userId, withdrawal.amount, "rejected")}
+//                               style={{
+//                                 padding: "8px 14px",
+//                                 background: "#dc2626",
+//                                 color: "#fff",
+//                                 border: "none",
+//                                 borderRadius: 6,
+//                                 cursor: "pointer",
+//                                 fontSize: 12,
+//                                 fontWeight: 600
+//                               }}
+//                             >
+//                               Reject
+//                             </button>
+//                           </div>
+//                         )}
+//                       </td>
+//                     </tr>
+//                   ))}
+//                 </tbody>
+//               </table>
+//             </div>
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
 
 export default function AdminPanel() {
-  const [payments, setPayments] = useState([]);
   const [withdrawals, setWithdrawals] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState("payments"); // payments or withdrawals
-  const [filter, setFilter] = useState("all");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -354,9 +941,6 @@ export default function AdminPanel() {
 
   const fetchData = async () => {
     try {
-      const paymentsRes = await API.get("/payment/pending-payments");
-      setPayments(paymentsRes.data.payments || []);
-
       const withdrawalsRes = await API.get("/payment/withdrawal-requests");
       setWithdrawals(withdrawalsRes.data.withdrawals || []);
 
@@ -368,17 +952,14 @@ export default function AdminPanel() {
     }
   };
 
-  const handleVerifyPayment = async (transactionId, status) => {
+  const handleRunDistribution = async () => {
+    if (!window.confirm("Run daily profit distribution for all active purchases?")) return;
     try {
-      await API.post("/payment/verify-payment-manual", {
-        transactionId,
-        status
-      });
-
-      alert(`Payment ${status}!`);
+      await API.post("/admin/run-distribution");
+      alert("✅ Distribution executed successfully!");
       fetchData();
     } catch (error) {
-      alert("Error: " + (error.response?.data?.message || "Failed"));
+      alert("Error: " + (error.response?.data?.message || "Failed to run distribution"));
     }
   };
 
@@ -400,9 +981,8 @@ export default function AdminPanel() {
   const getStatusBadge = (status) => {
     const styles = {
       pending: { bg: "#fef3c7", color: "#92400e", text: "⏳ Pending" },
-      verified: { bg: "#d1fae5", color: "#065f46", text: "✅ Verified" },
-      rejected: { bg: "#fee2e2", color: "#991b1b", text: "❌ Rejected" },
-      approved: { bg: "#d1fae5", color: "#065f46", text: "✅ Approved" }
+      approved: { bg: "#d1fae5", color: "#065f46", text: "✅ Approved" },
+      rejected: { bg: "#fee2e2", color: "#991b1b", text: "❌ Rejected" }
     };
     const style = styles[status] || styles.pending;
     return (
@@ -446,27 +1026,15 @@ export default function AdminPanel() {
           <h1 style={{ fontSize: 32, fontWeight: 800, color: "#1e293b", marginBottom: 8 }}>
             🔐 Admin Panel
           </h1>
-          <p style={{ color: "#64748b", fontSize: 16 }}>
+          <p style={{ color: "#64748b", fontSize: 16, marginBottom: 16 }}>
             Email: {localStorage.getItem("email")}
           </p>
-        </div>
-
-        {/* Tabs */}
-        <div style={{
-          background: "#fff",
-          padding: 16,
-          borderRadius: 12,
-          marginBottom: 24,
-          display: "flex",
-          gap: 12,
-          boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
-        }}>
           <button
-            onClick={() => setTab("payments")}
+            onClick={handleRunDistribution}
             style={{
               padding: "12px 24px",
-              background: tab === "payments" ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" : "#f1f5f9",
-              color: tab === "payments" ? "#fff" : "#64748b",
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              color: "#fff",
               border: "none",
               borderRadius: 8,
               cursor: "pointer",
@@ -474,204 +1042,98 @@ export default function AdminPanel() {
               fontSize: 14
             }}
           >
-            💳 Payments ({payments.filter(p => p.status === "pending").length})
-          </button>
-          <button
-            onClick={() => setTab("withdrawals")}
-            style={{
-              padding: "12px 24px",
-              background: tab === "withdrawals" ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" : "#f1f5f9",
-              color: tab === "withdrawals" ? "#fff" : "#64748b",
-              border: "none",
-              borderRadius: 8,
-              cursor: "pointer",
-              fontWeight: 600,
-              fontSize: 14
-            }}
-          >
-            💰 Withdrawals ({withdrawals.filter(w => w.status === "pending").length})
+            🔄 Run Daily Distribution
           </button>
         </div>
-
-        {/* Payments Table */}
-        {tab === "payments" && (
-          <div style={{
-            background: "#fff",
-            borderRadius: 16,
-            padding: 24,
-            boxShadow: "0 10px 40px rgba(0,0,0,0.15)"
-          }}>
-            <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 24, color: "#1e293b" }}>
-              Payment Verifications
-            </h2>
-
-            {payments.length === 0 ? (
-              <p style={{ textAlign: "center", color: "#94a3b8" }}>No payments yet</p>
-            ) : (
-              <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr style={{ borderBottom: "2px solid #e2e8f0" }}>
-                      <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>User</th>
-                      <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Product</th>
-                      <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Amount</th>
-                      <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Transaction ID</th>
-                      <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Status</th>
-                      <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {payments.map((payment, idx) => (
-                      <tr key={idx} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                        <td style={{ padding: "16px" }}>
-                          <div style={{ fontWeight: 600, color: "#1e293b" }}>{payment.userName}</div>
-                          <div style={{ fontSize: 12, color: "#64748b" }}>{payment.userEmail}</div>
-                        </td>
-                        <td style={{ padding: "16px", fontWeight: 600 }}>{payment.productName}</td>
-                        <td style={{ padding: "16px", fontWeight: 700, color: "#667eea", fontSize: 16 }}>
-                          ₹{payment.amount}
-                        </td>
-                        <td style={{ padding: "16px", fontSize: 13, color: "#64748b", fontFamily: "monospace" }}>
-                          {payment.transactionId}
-                        </td>
-                        <td style={{ padding: "16px" }}>
-                          {getStatusBadge(payment.status)}
-                        </td>
-                        <td style={{ padding: "16px" }}>
-                          {payment.status === "pending" && (
-                            <div style={{ display: "flex", gap: 8 }}>
-                              <button
-                                onClick={() => handleVerifyPayment(payment.transactionId, "verified")}
-                                style={{
-                                  padding: "8px 14px",
-                                  background: "#059669",
-                                  color: "#fff",
-                                  border: "none",
-                                  borderRadius: 6,
-                                  cursor: "pointer",
-                                  fontSize: 12,
-                                  fontWeight: 600
-                                }}
-                              >
-                                Accept
-                              </button>
-                              <button
-                                onClick={() => handleVerifyPayment(payment.transactionId, "rejected")}
-                                style={{
-                                  padding: "8px 14px",
-                                  background: "#dc2626",
-                                  color: "#fff",
-                                  border: "none",
-                                  borderRadius: 6,
-                                  cursor: "pointer",
-                                  fontSize: 12,
-                                  fontWeight: 600
-                                }}
-                              >
-                                Reject
-                              </button>
-                            </div>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        )}
 
         {/* Withdrawals Table */}
-        {tab === "withdrawals" && (
-          <div style={{
-            background: "#fff",
-            borderRadius: 16,
-            padding: 24,
-            boxShadow: "0 10px 40px rgba(0,0,0,0.15)"
-          }}>
-            <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 24, color: "#1e293b" }}>
-              Withdrawal Requests
-            </h2>
+        <div style={{
+          background: "#fff",
+          borderRadius: 16,
+          padding: 24,
+          boxShadow: "0 10px 40px rgba(0,0,0,0.15)"
+        }}>
+          <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 24, color: "#1e293b" }}>
+            💰 Withdrawal Requests ({withdrawals.filter(w => w.status === "pending").length} pending)
+          </h2>
 
-            {withdrawals.length === 0 ? (
-              <p style={{ textAlign: "center", color: "#94a3b8" }}>No withdrawal requests</p>
-            ) : (
-              <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr style={{ borderBottom: "2px solid #e2e8f0" }}>
-                      <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>User</th>
-                      <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Amount</th>
-                      <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Account</th>
-                      <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>IFSC</th>
-                      <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Status</th>
-                      <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Actions</th>
+          {withdrawals.length === 0 ? (
+            <p style={{ textAlign: "center", color: "#94a3b8" }}>No withdrawal requests</p>
+          ) : (
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr style={{ borderBottom: "2px solid #e2e8f0" }}>
+                    <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>User</th>
+                    <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Amount</th>
+                    <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Account</th>
+                    <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>IFSC</th>
+                    <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Status</th>
+                    <th style={{ padding: "12px", textAlign: "left", color: "#64748b", fontWeight: 600 }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {withdrawals.map((withdrawal, idx) => (
+                    <tr key={idx} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                      <td style={{ padding: "16px" }}>
+                        <div style={{ fontWeight: 600, color: "#1e293b" }}>{withdrawal.userName}</div>
+                        <div style={{ fontSize: 12, color: "#64748b" }}>{withdrawal.userEmail}</div>
+                      </td>
+                      <td style={{ padding: "16px", fontWeight: 700, color: "#667eea", fontSize: 16 }}>
+                        ₹{withdrawal.amount}
+                      </td>
+                      <td style={{ padding: "16px", fontSize: 13, color: "#64748b", fontFamily: "monospace" }}>
+                        {withdrawal.bankAccountNumber}
+                      </td>
+                      <td style={{ padding: "16px", fontSize: 13, color: "#64748b" }}>
+                        {withdrawal.ifscCode}
+                      </td>
+                      <td style={{ padding: "16px" }}>
+                        {getStatusBadge(withdrawal.status)}
+                      </td>
+                      <td style={{ padding: "16px" }}>
+                        {withdrawal.status === "pending" && (
+                          <div style={{ display: "flex", gap: 8 }}>
+                            <button
+                              onClick={() => handleProcessWithdrawal(withdrawal.userId, withdrawal.amount, "approved")}
+                              style={{
+                                padding: "8px 14px",
+                                background: "#059669",
+                                color: "#fff",
+                                border: "none",
+                                borderRadius: 6,
+                                cursor: "pointer",
+                                fontSize: 12,
+                                fontWeight: 600
+                              }}
+                            >
+                              Approve
+                            </button>
+                            <button
+                              onClick={() => handleProcessWithdrawal(withdrawal.userId, withdrawal.amount, "rejected")}
+                              style={{
+                                padding: "8px 14px",
+                                background: "#dc2626",
+                                color: "#fff",
+                                border: "none",
+                                borderRadius: 6,
+                                cursor: "pointer",
+                                fontSize: 12,
+                                fontWeight: 600
+                              }}
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        )}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {withdrawals.map((withdrawal, idx) => (
-                      <tr key={idx} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                        <td style={{ padding: "16px" }}>
-                          <div style={{ fontWeight: 600, color: "#1e293b" }}>{withdrawal.userName}</div>
-                          <div style={{ fontSize: 12, color: "#64748b" }}>{withdrawal.userEmail}</div>
-                        </td>
-                        <td style={{ padding: "16px", fontWeight: 700, color: "#667eea", fontSize: 16 }}>
-                          ₹{withdrawal.amount}
-                        </td>
-                        <td style={{ padding: "16px", fontSize: 13, color: "#64748b", fontFamily: "monospace" }}>
-                          {withdrawal.bankAccountNumber}
-                        </td>
-                        <td style={{ padding: "16px", fontSize: 13, color: "#64748b" }}>
-                          {withdrawal.ifscCode}
-                        </td>
-                        <td style={{ padding: "16px" }}>
-                          {getStatusBadge(withdrawal.status)}
-                        </td>
-                        <td style={{ padding: "16px" }}>
-                          {withdrawal.status === "pending" && (
-                            <div style={{ display: "flex", gap: 8 }}>
-                              <button
-                                onClick={() => handleProcessWithdrawal(withdrawal.userId, withdrawal.amount, "approved")}
-                                style={{
-                                  padding: "8px 14px",
-                                  background: "#059669",
-                                  color: "#fff",
-                                  border: "none",
-                                  borderRadius: 6,
-                                  cursor: "pointer",
-                                  fontSize: 12,
-                                  fontWeight: 600
-                                }}
-                              >
-                                Approve
-                              </button>
-                              <button
-                                onClick={() => handleProcessWithdrawal(withdrawal.userId, withdrawal.amount, "rejected")}
-                                style={{
-                                  padding: "8px 14px",
-                                  background: "#dc2626",
-                                  color: "#fff",
-                                  border: "none",
-                                  borderRadius: 6,
-                                  cursor: "pointer",
-                                  fontSize: 12,
-                                  fontWeight: 600
-                                }}
-                              >
-                                Reject
-                              </button>
-                            </div>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        )}
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
