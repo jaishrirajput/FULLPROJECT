@@ -313,9 +313,89 @@
 
 
 
-import { Resend } from "resend";
+// import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// const resend = new Resend(process.env.RESEND_API_KEY);
+
+// // ✅ Generate 6-digit OTP
+// export const generateOTP = () => {
+//   return Math.floor(100000 + Math.random() * 900000).toString();
+// };
+
+// // ✅ Send OTP Email
+// export const sendOTPEmail = async (email, otp) => {
+//   try {
+//     console.log(`🔹 Attempting to send OTP to: ${email}`);
+//     console.log(`🔹 Using Resend API`);
+
+//     const { data, error } = await resend.emails.send({
+//      from: "AI Robots <noreply@airobotsmarketplace.in>",
+//       to: email,
+//       subject: "🔐 Your OTP for Account Verification",
+//       html: `
+//         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px;">
+//           <div style="background: white; padding: 30px; border-radius: 8px;">
+//             <h1 style="color: #667eea; text-align: center; margin-bottom: 20px;">🤖 AI Robots</h1>
+            
+//             <h2 style="color: #1e293b; margin-bottom: 16px;">Verify Your Email</h2>
+            
+//             <p style="color: #64748b; font-size: 16px; line-height: 1.6;">
+//               Thank you for registering! Use the OTP below to complete your registration:
+//             </p>
+            
+//             <div style="background: #f1f5f9; padding: 20px; border-radius: 8px; text-align: center; margin: 24px 0;">
+//               <h1 style="color: #667eea; font-size: 36px; letter-spacing: 8px; margin: 0;">
+//                 ${otp}
+//               </h1>
+//             </div>
+            
+//             <p style="color: #64748b; font-size: 14px;">
+//               This OTP is valid for <strong>10 minutes</strong>.
+//             </p>
+            
+//             <p style="color: #64748b; font-size: 14px;">
+//               If you didn't request this, please ignore this email.
+//             </p>
+            
+//             <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;">
+            
+//             <p style="color: #94a3b8; font-size: 12px; text-align: center;">
+//               © 2025 AI Robots Marketplace. All rights reserved.
+//             </p>
+//           </div>
+//         </div>
+//       `,
+//     });
+
+//     if (error) {
+//       console.error("❌ Resend error:", error);
+//       return false;
+//     }
+
+//     console.log(`✅ OTP email sent successfully to ${email}`);
+//     console.log(`✅ Email ID: ${data.id}`);
+    
+//     return true;
+
+//   } catch (error) {
+//     console.error("❌ Email send error:", error.message);
+//     console.error("❌ Full error:", error);
+//     return false;
+//   }
+// };
+
+
+
+
+
+
+
+
+
+
+
+
+import { Resend } from "resend";
 
 // ✅ Generate 6-digit OTP
 export const generateOTP = () => {
@@ -328,8 +408,11 @@ export const sendOTPEmail = async (email, otp) => {
     console.log(`🔹 Attempting to send OTP to: ${email}`);
     console.log(`🔹 Using Resend API`);
 
+    // ✅ Resend instance created here, at call-time — not at module load time
+    const resend = new Resend(process.env.RESEND_API_KEY);
+
     const { data, error } = await resend.emails.send({
-     from: "AI Robots <noreply@airobotsmarketplace.in>",
+      from: "AI Robots <noreply@airobotsmarketplace.in>",
       to: email,
       subject: "🔐 Your OTP for Account Verification",
       html: `

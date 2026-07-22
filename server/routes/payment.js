@@ -1220,98 +1220,269 @@
 
 //withdrall
 
+// import express from "express";
+// import authMiddleware from "../middleware/authMiddleware.js";
+// import adminMiddleware from "../middleware/adminMiddleware.js";
+
+// const router = express.Router();
+
+// const PRODUCTS = [
+//   { id: 1, name: "AI Robot 1", amount: 100 },
+//   { id: 2, name: "AI Robot 2", amount: 500 },
+//   { id: 3, name: "AI Robot 3", amount: 1200 },
+//   { id: 4, name: "AI Robot 4", amount: 2400 },
+//   { id: 5, name: "AI Robot 5", amount: 4980 },
+//   { id: 6, name: "AI Robot 6", amount: 9850 },
+//   { id: 7, name: "AI Robot 7", amount: 15600 },
+//   { id: 8, name: "AI Robot 8", amount: 22450 },
+//   { id: 9, name: "AI Robot 9", amount: 35000 },
+//   { id: 10, name: "AI Robot 10", amount: 55800 }
+// ];
+
+// const pendingPayments = [];
+// const withdrawalRequests = [];
+
+// // ✅ Submit Transaction ID (User submits after payment)
+// router.post("/submit-transaction", authMiddleware, async (req, res) => {
+//   try {
+//     const { productId, transactionId, amount } = req.body;
+
+//     console.log("🔹 Transaction submission from user:", req.user._id);
+//     console.log("🔹 Transaction details:", { productId, transactionId, amount });
+
+//     if (!transactionId || !productId || !amount) {
+//       return res.status(400).json({ message: "Missing required fields" });
+//     }
+
+//     const product = PRODUCTS.find(p => p.id === Number(productId));
+//     if (!product) {
+//       return res.status(400).json({ message: "Invalid product" });
+//     }
+
+//     const exists = pendingPayments.find(p => p.transactionId === transactionId);
+//     if (exists) {
+//       return res.status(400).json({ message: "Transaction ID already submitted" });
+//     }
+
+//     const payment = {
+//       userId: req.user._id.toString(),
+//       userName: req.user.name,
+//       userEmail: req.user.email,
+//       productId: product.id,
+//       productName: product.name,
+//       amount: product.amount,
+//       transactionId: transactionId,
+//       status: "pending",
+//       submittedAt: new Date(),
+//     };
+
+//     pendingPayments.push(payment);
+
+//     console.log("✅ Payment submitted for verification:", payment);
+
+//     res.json({ 
+//       success: true, 
+//       message: "Payment submitted successfully! Admin will verify soon.",
+//       payment: payment
+//     });
+
+//   } catch (error) {
+//     console.error("❌ Submit transaction error:", error);
+//     res.status(500).json({ message: "Failed to submit payment", error: error.message });
+//   }
+// });
+
+// // ✅ Get user's own purchases
+// router.get("/my-purchases", authMiddleware, async (req, res) => {
+//   try {
+//     console.log("🔹 Fetching purchases for user:", req.user._id);
+    
+//     const userPurchases = pendingPayments.filter(
+//       p => p.userId === req.user._id.toString()
+//     );
+
+//     res.json({ 
+//       success: true,
+//       purchases: userPurchases,
+//       count: userPurchases.length
+//     });
+
+//   } catch (error) {
+//     console.error("❌ Fetch user purchases error:", error);
+//     res.status(500).json({ message: "Failed to fetch purchases" });
+//   }
+// });
+
+// // ✅ Submit Withdrawal Request
+// router.post("/withdrawal-request", authMiddleware, async (req, res) => {
+//   try {
+//     const { amount } = req.body;
+
+//     console.log("🔹 Withdrawal request from user:", req.user._id);
+//     console.log("🔹 Amount:", amount);
+
+//     if (!amount || amount <= 0) {
+//       return res.status(400).json({ message: "Invalid amount" });
+//     }
+
+//     if (req.user.walletBalance < amount) {
+//       return res.status(400).json({ message: "Insufficient balance" });
+//     }
+
+//     const withdrawal = {
+//       userId: req.user._id.toString(),
+//       userName: req.user.name,
+//       userEmail: req.user.email,
+//       amount: amount,
+//       bankAccountNumber: req.user.bankAccountNumber || "Not provided",
+//       ifscCode: req.user.ifscCode || "Not provided",
+//       accountHolderName: req.user.accountHolderName || req.user.name,
+//       status: "pending",
+//       requestedAt: new Date()
+//     };
+
+//     withdrawalRequests.push(withdrawal);
+
+//     console.log("✅ Withdrawal request submitted:", withdrawal);
+
+//     res.json({ 
+//       success: true, 
+//       message: "Withdrawal request submitted! Admin will process soon.",
+//       withdrawal: withdrawal
+//     });
+
+//   } catch (error) {
+//     console.error("❌ Withdrawal request error:", error);
+//     res.status(500).json({ message: "Failed to submit withdrawal request" });
+//   }
+// });
+
+// // ✅ Get all pending payments (ADMIN ONLY)
+// router.get("/pending-payments", authMiddleware, adminMiddleware, async (req, res) => {
+//   try {
+//     console.log("🔹 Admin fetching pending payments");
+    
+//     res.json({ 
+//       success: true,
+//       payments: pendingPayments,
+//       count: pendingPayments.length
+//     });
+
+//   } catch (error) {
+//     console.error("❌ Fetch payments error:", error);
+//     res.status(500).json({ message: "Failed to fetch payments" });
+//   }
+// });
+
+// // ✅ Get all withdrawal requests (ADMIN ONLY)
+// router.get("/withdrawal-requests", authMiddleware, adminMiddleware, async (req, res) => {
+//   try {
+//     console.log("🔹 Admin fetching withdrawal requests");
+    
+//     res.json({ 
+//       success: true,
+//       withdrawals: withdrawalRequests,
+//       count: withdrawalRequests.length
+//     });
+
+//   } catch (error) {
+//     console.error("❌ Fetch withdrawals error:", error);
+//     res.status(500).json({ message: "Failed to fetch withdrawals" });
+//   }
+// });
+
+// // ✅ Verify payment (ADMIN ONLY)
+// router.post("/verify-payment-manual", authMiddleware, adminMiddleware, async (req, res) => {
+//   try {
+//     const { transactionId, status } = req.body;
+
+//     console.log("🔹 Admin manual verification:", { transactionId, status });
+
+//     const payment = pendingPayments.find(p => p.transactionId === transactionId);
+    
+//     if (!payment) {
+//       return res.status(404).json({ message: "Payment not found" });
+//     }
+
+//     payment.status = status;
+//     payment.verifiedAt = new Date();
+//     payment.verifiedBy = req.user._id.toString();
+
+//     console.log(`✅ Payment ${status} by admin:`, req.user.email);
+
+//     res.json({ 
+//       success: true,
+//       message: `Payment ${status} successfully`,
+//       payment: payment
+//     });
+
+//   } catch (error) {
+//     console.error("❌ Verify payment error:", error);
+//     res.status(500).json({ message: "Verification failed" });
+//   }
+// });
+
+// // ✅ Approve/Reject Withdrawal (ADMIN ONLY)
+// router.post("/process-withdrawal", authMiddleware, adminMiddleware, async (req, res) => {
+//   try {
+//     const { userId, amount, status } = req.body;
+
+//     console.log("🔹 Admin processing withdrawal:", { userId, amount, status });
+
+//     const withdrawal = withdrawalRequests.find(
+//       w => w.userId === userId && w.amount === amount && w.status === "pending"
+//     );
+    
+//     if (!withdrawal) {
+//       return res.status(404).json({ message: "Withdrawal request not found" });
+//     }
+
+//     withdrawal.status = status;
+//     withdrawal.processedAt = new Date();
+//     withdrawal.processedBy = req.user._id.toString();
+
+//     console.log(`✅ Withdrawal ${status} by admin:`, req.user.email);
+
+//     res.json({ 
+//       success: true,
+//       message: `Withdrawal ${status} successfully`,
+//       withdrawal: withdrawal
+//     });
+
+//   } catch (error) {
+//     console.error("❌ Process withdrawal error:", error);
+//     res.status(500).json({ message: "Processing failed" });
+//   }
+// });
+
+// export default router;
+
+
+
+
+
+
+
+
+
+
 import express from "express";
 import authMiddleware from "../middleware/authMiddleware.js";
 import adminMiddleware from "../middleware/adminMiddleware.js";
+import { createOrder, verifyPayment, getWallet } from "../controllers/paymentController.js";
 
 const router = express.Router();
 
-const PRODUCTS = [
-  { id: 1, name: "AI Robot 1", amount: 100 },
-  { id: 2, name: "AI Robot 2", amount: 500 },
-  { id: 3, name: "AI Robot 3", amount: 1200 },
-  { id: 4, name: "AI Robot 4", amount: 2400 },
-  { id: 5, name: "AI Robot 5", amount: 4980 },
-  { id: 6, name: "AI Robot 6", amount: 9850 },
-  { id: 7, name: "AI Robot 7", amount: 15600 },
-  { id: 8, name: "AI Robot 8", amount: 22450 },
-  { id: 9, name: "AI Robot 9", amount: 35000 },
-  { id: 10, name: "AI Robot 10", amount: 55800 }
-];
-
-const pendingPayments = [];
 const withdrawalRequests = [];
 
-// ✅ Submit Transaction ID (User submits after payment)
-router.post("/submit-transaction", authMiddleware, async (req, res) => {
-  try {
-    const { productId, transactionId, amount } = req.body;
+// ✅ Razorpay: Create Order
+router.post("/create-order", authMiddleware, createOrder);
 
-    console.log("🔹 Transaction submission from user:", req.user._id);
-    console.log("🔹 Transaction details:", { productId, transactionId, amount });
+// ✅ Razorpay: Verify Payment
+router.post("/verify-payment", authMiddleware, verifyPayment);
 
-    if (!transactionId || !productId || !amount) {
-      return res.status(400).json({ message: "Missing required fields" });
-    }
-
-    const product = PRODUCTS.find(p => p.id === Number(productId));
-    if (!product) {
-      return res.status(400).json({ message: "Invalid product" });
-    }
-
-    const exists = pendingPayments.find(p => p.transactionId === transactionId);
-    if (exists) {
-      return res.status(400).json({ message: "Transaction ID already submitted" });
-    }
-
-    const payment = {
-      userId: req.user._id.toString(),
-      userName: req.user.name,
-      userEmail: req.user.email,
-      productId: product.id,
-      productName: product.name,
-      amount: product.amount,
-      transactionId: transactionId,
-      status: "pending",
-      submittedAt: new Date(),
-    };
-
-    pendingPayments.push(payment);
-
-    console.log("✅ Payment submitted for verification:", payment);
-
-    res.json({ 
-      success: true, 
-      message: "Payment submitted successfully! Admin will verify soon.",
-      payment: payment
-    });
-
-  } catch (error) {
-    console.error("❌ Submit transaction error:", error);
-    res.status(500).json({ message: "Failed to submit payment", error: error.message });
-  }
-});
-
-// ✅ Get user's own purchases
-router.get("/my-purchases", authMiddleware, async (req, res) => {
-  try {
-    console.log("🔹 Fetching purchases for user:", req.user._id);
-    
-    const userPurchases = pendingPayments.filter(
-      p => p.userId === req.user._id.toString()
-    );
-
-    res.json({ 
-      success: true,
-      purchases: userPurchases,
-      count: userPurchases.length
-    });
-
-  } catch (error) {
-    console.error("❌ Fetch user purchases error:", error);
-    res.status(500).json({ message: "Failed to fetch purchases" });
-  }
-});
+// ✅ Get user's wallet + purchases
+router.get("/wallet", authMiddleware, getWallet);
 
 // ✅ Submit Withdrawal Request
 router.post("/withdrawal-request", authMiddleware, async (req, res) => {
@@ -1357,23 +1528,6 @@ router.post("/withdrawal-request", authMiddleware, async (req, res) => {
   }
 });
 
-// ✅ Get all pending payments (ADMIN ONLY)
-router.get("/pending-payments", authMiddleware, adminMiddleware, async (req, res) => {
-  try {
-    console.log("🔹 Admin fetching pending payments");
-    
-    res.json({ 
-      success: true,
-      payments: pendingPayments,
-      count: pendingPayments.length
-    });
-
-  } catch (error) {
-    console.error("❌ Fetch payments error:", error);
-    res.status(500).json({ message: "Failed to fetch payments" });
-  }
-});
-
 // ✅ Get all withdrawal requests (ADMIN ONLY)
 router.get("/withdrawal-requests", authMiddleware, adminMiddleware, async (req, res) => {
   try {
@@ -1388,37 +1542,6 @@ router.get("/withdrawal-requests", authMiddleware, adminMiddleware, async (req, 
   } catch (error) {
     console.error("❌ Fetch withdrawals error:", error);
     res.status(500).json({ message: "Failed to fetch withdrawals" });
-  }
-});
-
-// ✅ Verify payment (ADMIN ONLY)
-router.post("/verify-payment-manual", authMiddleware, adminMiddleware, async (req, res) => {
-  try {
-    const { transactionId, status } = req.body;
-
-    console.log("🔹 Admin manual verification:", { transactionId, status });
-
-    const payment = pendingPayments.find(p => p.transactionId === transactionId);
-    
-    if (!payment) {
-      return res.status(404).json({ message: "Payment not found" });
-    }
-
-    payment.status = status;
-    payment.verifiedAt = new Date();
-    payment.verifiedBy = req.user._id.toString();
-
-    console.log(`✅ Payment ${status} by admin:`, req.user.email);
-
-    res.json({ 
-      success: true,
-      message: `Payment ${status} successfully`,
-      payment: payment
-    });
-
-  } catch (error) {
-    console.error("❌ Verify payment error:", error);
-    res.status(500).json({ message: "Verification failed" });
   }
 });
 

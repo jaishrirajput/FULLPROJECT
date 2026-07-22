@@ -70,6 +70,37 @@
 
 
 
+// import User from "../models/User.js";
+// import Purchase from "../models/Purchase.js";
+
+// // Manual run distribution
+// export const runDistributionNow = async (req, res) => {
+//   try {
+//     const activePurchases = await Purchase.find({ active: true });
+//     for (const p of activePurchases) {
+//       if (p.remainingDays <= 0) {
+//         p.active = false;
+//         await p.save();
+//         continue;
+//       }
+//       await User.findByIdAndUpdate(p.user, { $inc: { walletBalance: p.dailyProfit } });
+//       p.remainingDays = p.remainingDays - 1;
+//       if (p.remainingDays <= 0) p.active = false;
+//       await p.save();
+//     }
+//     return res.json({ success: true, message: "Distribution executed" });
+//   } catch (err) {
+//     return res.status(500).json({ message: err.message });
+//   }
+// };
+
+
+
+
+
+
+
+
 import User from "../models/User.js";
 import Purchase from "../models/Purchase.js";
 
@@ -77,17 +108,29 @@ import Purchase from "../models/Purchase.js";
 export const runDistributionNow = async (req, res) => {
   try {
     const activePurchases = await Purchase.find({ active: true });
+
     for (const p of activePurchases) {
       if (p.remainingDays <= 0) {
         p.active = false;
         await p.save();
         continue;
       }
-      await User.findByIdAndUpdate(p.user, { $inc: { walletBalance: p.dailyProfit } });
+
       p.remainingDays = p.remainingDays - 1;
-      if (p.remainingDays <= 0) p.active = false;
+
+      // Credit daily profit
+      let amountToCredit = p.dailyProfit;
+
+      // ✅ On the last day, also return the principal (invested amount)
+      if (p.remainingDays <= 0) {
+        amountToCredit += p.amount;
+        p.active = false;
+      }
+
+      await User.findByIdAndUpdate(p.user, { $inc: { walletBalance: amountToCredit } });
       await p.save();
     }
+
     return res.json({ success: true, message: "Distribution executed" });
   } catch (err) {
     return res.status(500).json({ message: err.message });
