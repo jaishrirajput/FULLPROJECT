@@ -103,105 +103,105 @@
 
 //final deploy
 
-import mongoose from "mongoose";
-
-const purchaseSchema = new mongoose.Schema(
-  {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // User collection se reference
-      required: true,
-    },
-    razorpayOrderId: {
-      type: String,
-      required: true, // order create hone par mandatory
-    },
-    razorpayPaymentId: {
-      type: String, // payment complete hone par fill hoga
-    },
-    amount: {
-      type: Number,
-      required: true, // payment amount
-    },
-    status: {
-      type: String,
-      enum: ["created", "paid", "failed"], // order ka status
-      default: "created",
-    },
-  },
-  { timestamps: true } // createdAt aur updatedAt automatically add hote hain
-);
-
-const Purchase = mongoose.model("Purchase", purchaseSchema);
-export default Purchase;
-
-
-
-
-
-
-
-
-
-
 // import mongoose from "mongoose";
 
 // const purchaseSchema = new mongoose.Schema(
 //   {
 //     user: {
 //       type: mongoose.Schema.Types.ObjectId,
-//       ref: "User",
-//       required: true,
-//     },
-//     productId: {
-//       type: Number,
-//       required: true,
-//     },
-//     productName: {
-//       type: String,
+//       ref: "User", // User collection se reference
 //       required: true,
 //     },
 //     razorpayOrderId: {
 //       type: String,
-//       required: true,
+//       required: true, // order create hone par mandatory
 //     },
 //     razorpayPaymentId: {
-//       type: String,
+//       type: String, // payment complete hone par fill hoga
 //     },
 //     amount: {
 //       type: Number,
-//       required: true,
-//     },
-//     startDate: {
-//       type: Date,
-//     },
-//     expiryDate: {
-//       type: Date,
-//     },
-//     totalProfit: {
-//       type: Number,
-//       default: 0,
-//     },
-//     dailyProfit: {
-//       type: Number,
-//       default: 0,
-//     },
-//     remainingDays: {
-//       type: Number,
-//       default: 0,
-//     },
-//     active: {
-//       type: Boolean,
-//       default: true,
+//       required: true, // payment amount
 //     },
 //     status: {
 //       type: String,
-//       enum: ["created", "paid", "failed"],
+//       enum: ["created", "paid", "failed"], // order ka status
 //       default: "created",
 //     },
 //   },
-//   { timestamps: true }
+//   { timestamps: true } // createdAt aur updatedAt automatically add hote hain
 // );
 
 // const Purchase = mongoose.model("Purchase", purchaseSchema);
 // export default Purchase;
+
+
+
+
+
+
+
+
+
+
+import mongoose from "mongoose";
+
+const purchaseSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    productId: {
+      type: Number,
+      required: true,
+    },
+    productName: {
+      type: String,
+      required: true,
+    },
+    razorpayOrderId: {
+      type: String,
+      required: true,
+    },
+    razorpayPaymentId: {
+      type: String,
+    },
+    amount: {
+      type: Number,
+      required: true,
+    },
+    startDate: {
+      type: Date,
+    },
+    expiryDate: {
+      type: Date,
+    },
+    totalProfit: {
+      type: Number,
+      default: 0,
+    },
+    dailyProfit: {
+      type: Number,
+      default: 0,
+    },
+    remainingDays: {
+      type: Number,
+      default: 0,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+    status: {
+      type: String,
+      enum: ["created", "paid", "failed"],
+      default: "created",
+    },
+  },
+  { timestamps: true }
+);
+
+const Purchase = mongoose.model("Purchase", purchaseSchema);
+export default Purchase;
