@@ -1,6 +1,6 @@
 import Razorpay from "razorpay";
 import crypto from "crypto";
-import Purchase from "../models/purchase.js";
+import Purchase from "../models/Purchase.js";
 import User from "../models/User.js";
 
 const PRODUCTS = [
