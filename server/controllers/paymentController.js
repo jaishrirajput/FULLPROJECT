@@ -1,6 +1,6 @@
 import Razorpay from "razorpay";
 import crypto from "crypto";
-import Purchase from "../models/Purchase.js";
+import Purchase from "../models/purchase.js";
 import User from "../models/User.js";
 
 const PRODUCTS = [
@@ -18,7 +18,6 @@ const PRODUCTS = [
 
 export const createOrder = async (req, res) => {
   try {
-    // ✅ Razorpay instance created here, at call-time — not at module load time
     const razorpay = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID,
       key_secret: process.env.RAZORPAY_KEY_SECRET,
@@ -86,4 +85,3 @@ export const getWallet = async (req,res) => {
     res.status(500).json({ message:"Failed to fetch wallet" });
   }
 };
-
